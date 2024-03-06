@@ -45,13 +45,13 @@
         <property name="image" type="text" column="image"/>
     </class>
 
-<!--    <class name="com.ashcollege.entities.College" table="colleges" lazy="false">-->
-<!--        <id name="id" type="int" column="id">-->
-<!--            <generator class="native"/>-->
-<!--        </id>-->
-<!--        <property name="name" type="string" column="name"/>-->
-<!--    </class>-->
-
-
+    <class name="com.ashcollege.entities.Restaurant" table="restaurants" lazy="false">
+        <id name="id" type="int" column="id">
+            <generator class="native"/>
+        </id>
+        <property name="name" type="string" column="name"/>
+        <many-to-one name="product" column="name_product"
+                     class="com.ashcollege.entities.Restaurant"/>
+    </class>
 
 </hibernate-mapping>

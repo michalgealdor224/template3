@@ -17,15 +17,23 @@ public class Utils {
 
     @Autowired
     private Persist persist;
+    List<Product> productList;
+    private List<Product> newList;
+
 
     @PostConstruct
     public void init () {
+        productList = persist.loadAllProducts();
         createDataFromFile();
     }
 
-    private void createDataFromFile () {
+    public List<Product> getAllProducts() {
+        return this.productList;
+    }
+
+
+    public void createDataFromFile () {
         try {
-            List<Product> productList = persist.loadAllProducts();
             if (productList.isEmpty()) {
                 URL dataFile = Utils.class.getClassLoader().getResource("data/menu.csv");
                 if (dataFile != null) {
@@ -49,14 +57,57 @@ public class Utils {
                         }
                     }
 
-                    //sortByPrice(50);
+                    //sortByChoice(50,"salad");
 //                combination(300);
                 }
-                System.out.println(productList);
             }
 
         } catch (Exception e)  {
 
         }
+
+    }
+    public List<Product> sortByChoice(int price, String food) {
+        newList = new ArrayList<>();
+        for (int i = 0; i < this.productList.size(); i++) {
+            if (productList.get(i).getName().contains(food)&&
+                    productList.get(i).getPrice() <= price) {
+                Product product = productList.get(i);
+                newList.add(product);
+            }
+        }
+        return newList;
+    }
+
+    public List<Product> combination(double sum) {
+        boolean ifExist = false;
+        List<Integer> numbers = new ArrayList<>();
+        List<Product> possibleOptions = new ArrayList<>();
+        Random random = new Random();
+        double currentSum = 0;
+
+        while (numbers.size() < 13 || currentSum == sum) {
+            int randomNumber = random.nextInt(13 - 1 + 1) + 1;
+            for (int i = 0; i < numbers.size(); i++) {
+                if (numbers.get(i) == randomNumber) {
+                    ifExist = true;
+                    randomNumber = random.nextInt(13 - 1 + 1) + 1;
+                    ifExist = false;
+                    i = 0;
+                }
+            }
+            if (!ifExist) {
+                numbers.add(randomNumber);
+                if (productList.get(randomNumber).getPrice() + currentSum <= sum) {
+                    currentSum = currentSum + productList.get(randomNumber).getPrice();
+                    possibleOptions.add(productList.get(randomNumber));
+                }
+            }
+        }
+
+        for (int i = 0; i < possibleOptions.size(); i++) {
+            System.out.println(possibleOptions.get(i).getPrice());
+        }
+        return possibleOptions;
     }
 }

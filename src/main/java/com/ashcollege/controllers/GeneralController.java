@@ -1,8 +1,16 @@
 package com.ashcollege.controllers;
 
 import com.ashcollege.Persist;
+import com.ashcollege.entities.Product;
+import com.ashcollege.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 public class GeneralController {
@@ -10,8 +18,24 @@ public class GeneralController {
     @Autowired
     private Persist persist;
 
+    @Autowired
+    private Utils utils;
 
 
+    @RequestMapping (value = "get-products")
+    public List<Product> getProducts () {
+        return utils.getAllProducts();
+    }
+
+    @RequestMapping(value = {"get-products-after-filter"})
+    public List<Product> productsAfterFilter (int price , String food) {
+        return utils.sortByChoice(price,food);
+    }
+
+    @RequestMapping(value = {"get-combination"})
+    public List<Product> combination (double price) {
+        return utils.combination(price);
+    }
 
 //
 //    @RequestMapping (value = "/login", method = {RequestMethod.GET, RequestMethod.POST})
@@ -45,10 +69,7 @@ public class GeneralController {
 //        return dbUtils.addUser(userToAdd);
 //    }
 //
-//    @RequestMapping (value = "get-users")
-//    public List<User> getUsers () {
-//        return dbUtils.getAllUsers();
-//    }
+
 //
 //
 //    @RequestMapping (value = "add-product")
@@ -106,5 +127,7 @@ public class GeneralController {
 //        return basicResponse;
 //    }
 //
+
+
 
 }
