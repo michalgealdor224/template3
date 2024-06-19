@@ -3,31 +3,88 @@ package com.ashcollege.utils;
 
 import com.ashcollege.Persist;
 import com.ashcollege.entities.Product;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.*;
+import org.apache.commons.text.StringEscapeUtils;
+import org.json.JSONObject;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.List;
+
+import javax.annotation.PostConstruct;
+
+import org.apache.commons.text.StringEscapeUtils;
+import org.json.JSONObject;
+
 
 @Component
 public class Utils {
 
     @Autowired
     private Persist persist;
+
+
     List<Product> productList;
     private List<Product> newList;
 
 
-    @PostConstruct
-    public void init () {
-        productList = persist.loadAllProducts();
-        createDataFromFile();
+    public static String decode (String encoded) {
+        try {
+            return StringEscapeUtils.unescapeJava(encoded);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
-    public List<Product> getAllProducts() {
+    @PostConstruct
+    public void init() {
+        productList = persist.loadAllProducts();
+        createDataFromFile();
+
+        sendApiRequest("https://consumer-api.wolt.com/v1/pages/venue-list/category-kosher?lon=34.952290639252624&lat=29.548890477854528");
+    }
+
+
+    public static void sendApiRequest (String url) {
+        try {
+            URL myUrl = new URL(url);
+            HttpURLConnection conn = (HttpURLConnection) myUrl.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("App-Language", "he");
+            int responseCode = conn.getResponseCode();
+            if (responseCode == 200) {
+                BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                String inputLine;
+                StringBuilder response = new StringBuilder();
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
+                JSONObject jsonObject = new JSONObject(response.toString());
+                System.out.println(decode(jsonObject.toString()));
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    public List<Product> getAllProducts () {
         return this.productList;
     }
 
