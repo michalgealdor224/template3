@@ -12,7 +12,7 @@ import org.json.JSONObject;
 @Service
 public class OpenAIService {
 
-    private final String apiKey = "sk-proj-G8ROJ19zX1ZlbGdJZgxDT3BlbkFJjLBL3eYWknAqu29qRib8";
+    private final String apiKey = "";
     private final String apiUrl = "https://api.openai.com/v1/chat/completions";
 
     public String getChatResponse(String message) {
