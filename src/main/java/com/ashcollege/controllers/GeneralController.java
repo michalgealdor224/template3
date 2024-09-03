@@ -3,12 +3,18 @@ package com.ashcollege.controllers;
 import com.ashcollege.Persist;
 import com.ashcollege.entities.Product;
 import com.ashcollege.utils.Utils;
+import com.ashcollege.utils.openAI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.awt.font.MultipleMaster;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +26,21 @@ public class GeneralController {
 
     @Autowired
     private Utils utils;
+
+    @RequestMapping(value = "get-image-description")
+    public String getImageDescription(String url) throws IOException {
+        System.out.println(url);
+        String content =openAI.queryOpenAI("What’s in this image? Tell me only what is the food in it, in a single word",url);
+        File file = new File(url);
+        if (file.delete()) {
+            System.out.println("Deleted file");
+        }
+        else {
+            System.out.println("Failed to delete file");
+        }
+        return content.toLowerCase();
+    }
+
 
 
     @RequestMapping (value = "get-products")
@@ -37,6 +58,17 @@ public class GeneralController {
         return utils.combination(price);
     }
 
+
+
+    @PostMapping ("upload-image")
+    public String uploadImage (MultipartFile file) throws IOException {
+        String directory = "C:\\Users\\USER\\Desktop\\לימודים\\פרוייקט\\11111";
+        file.transferTo(new File(directory + file.getOriginalFilename()));
+        String content =openAI.queryOpenAI("What’s in this image? Tell me only what is the food in it, in a single word",directory + file.getOriginalFilename());
+        return content.toLowerCase();
+
+
+    }
 //
 //    @RequestMapping (value = "/login", method = {RequestMethod.GET, RequestMethod.POST})
 //    public BasicResponse login (String username, String password) {
